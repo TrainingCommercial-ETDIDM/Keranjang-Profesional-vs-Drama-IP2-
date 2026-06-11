@@ -12,10 +12,9 @@
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: white;
             overflow-x: hidden;
-            touch-action: pan-y; /* Allow vertical scroll by default, handled in JS during drag */
+            touch-action: pan-y; /* Allow vertical scroll normally */
         }
 
-        /* Glassmorphism Classes */
         .glass {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -48,75 +47,51 @@
             transform: translateY(-2px);
         }
 
-        /* Gen Z Accents */
         .text-glow-cyan { text-shadow: 0 0 10px #00f2fe; }
         .text-glow-pink { text-shadow: 0 0 10px #fe0979; }
-        .border-glow-cyan { box-shadow: 0 0 15px rgba(0, 242, 254, 0.5); border-color: #00f2fe; }
-        .border-glow-pink { box-shadow: 0 0 15px rgba(254, 9, 121, 0.5); border-color: #fe0979; }
-
-        /* Health Bar */
+        
         .health-bar-container { background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; height: 12px; }
         .health-bar { background: linear-gradient(90deg, #ff0844 0%, #ffb199 100%); transition: width 0.3s ease; height: 100%; }
-
-        /* Progress Bar */
         .progress-bar { background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%); transition: width 0.3s ease; height: 100%; }
 
-        /* Draggable Card Setup */
+        /* Draggable Card Setup (Fix Overlap) */
         #drag-card {
-            touch-action: none; /* Prevent scrolling when touching the card */
+            touch-action: none; /* Prevent scrolling when dragging */
             cursor: grab;
-            z-index: 50;
             width: 100%;
-            max-width: 400px; /* Limit width on desktop */
+            position: relative; /* Changed to relative inside a dock */
+            z-index: 50;
         }
         #drag-card.grabbing { cursor: grabbing; }
 
-        /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.5s ease forwards; }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-        }
-        .shake { animation: shake 0.4s ease; }
-
         @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0.8) translate(0,0); opacity: 0; }
+            50% { transform: scale(1.05) translate(0,0); }
+            100% { transform: scale(1) translate(0,0); opacity: 1; }
         }
-        .pop { animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Screen Management */
         .screen { display: none; min-height: 100vh; padding: 1.5rem; flex-direction: column; }
         .screen.active { display: flex; }
 
-        /* Background Pattern */
         .bg-pattern {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
             background-size: 30px 30px;
         }
 
-        /* Drop Zones */
         .drop-zone { transition: all 0.3s ease; }
         .drop-zone.hover-destruktif { background: rgba(254, 9, 121, 0.3); transform: scale(1.05); }
         .drop-zone.hover-konstruktif { background: rgba(0, 242, 254, 0.3); transform: scale(1.05); }
-
     </style>
 </head>
 <body class="antialiased">
     <div class="bg-pattern"></div>
+    <button id="btn-audio" class="fixed top-4 right-4 z-50 glass p-2 rounded-full text-white text-xl" onclick="toggleAudio()">🔊</button>
 
-    <!-- Audio Controls -->
-    <button id="btn-audio" class="fixed top-4 right-4 z-50 glass p-2 rounded-full text-white text-xl" onclick="toggleAudio()">
-        🔊
-    </button>
-
-    <!-- SCREEN 1: GATEWAY (Login) -->
     <div id="screen-gateway" class="screen active justify-center items-center">
         <div class="glass p-8 rounded-2xl w-full max-w-md text-center fade-in">
             <h1 class="text-3xl font-bold mb-2 text-glow-cyan">The Pivot Point</h1>
@@ -124,7 +99,8 @@
             
             <form id="login-form" class="space-y-4">
                 <div>
-                    <input type="text" id="input-nama" required placeholder="Nama Lengkap" class="w-full bg-black/30 border border-gray-500 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#00f2fe]">
+                    <!-- Only Nama is required now -->
+                    <input type="text" id="input-nama" required placeholder="Masukkan Nama Anda" class="w-full bg-black/30 border border-gray-500 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#00f2fe] text-center">
                 </div>
                 <button type="submit" class="w-full btn-glass text-white font-bold py-3 px-4 rounded-lg mt-4 uppercase tracking-wider text-sm">
                     Enter the Protocol
@@ -134,13 +110,13 @@
         <footer class="absolute bottom-4 text-xs text-gray-500">Education & Training Dept. © 2026</footer>
     </div>
 
-    <!-- SCREEN 2: BRIEFING -->
     <div id="screen-briefing" class="screen justify-center items-center">
         <div class="glass p-8 rounded-2xl w-full max-w-lg fade-in relative">
             <div class="absolute -top-6 -left-6 text-6xl opacity-20">⚠️</div>
             <h2 class="text-2xl font-bold mb-4 text-glow-pink">Mission Briefing</h2>
             <div class="space-y-4 text-sm text-gray-200 leading-relaxed">
-                <p><strong>[HOOK]</strong> Dunia kerja lama Anda telah usai. Perusahaan mengimplementasikan <strong>"The New Protocol"</strong>. Standar baru ini akan merombak total kebiasaan nyaman Anda.</p>
+                <!-- Hook word removed -->
+                <p>Dunia kerja lama Anda telah usai. Perusahaan mengimplementasikan <strong>"The New Protocol"</strong>. Standar baru ini akan merombak total kebiasaan nyaman Anda.</p>
                 <p>Ini adalah fase kritis: <strong>The Ending Phase</strong>. Otak Anda akan secara otomatis masuk ke "Mode Auto-Reject". Mengeluh hanya akan menciptakan drama dan menghabiskan energi tim.</p>
                 <p><strong>MISI ANDA:</strong><br>Sortir respons Anda terhadap berbagai situasi darurat. Bedakan mana yang hanya "Kepatuhan Semu/Emosional" (Destruktif) dan mana yang "Fokus Solusi/Tindakan Nyata" (Konstruktif).</p>
                 <div class="glass p-3 rounded mt-2 border-l-4 border-[#00f2fe]">
@@ -158,20 +134,17 @@
         </div>
     </div>
 
-    <!-- SCREEN 3: CORE EXECUTION (GAME) -->
-    <div id="screen-game" class="screen">
+    <div id="screen-game" class="screen flex-col h-screen">
         <!-- Header Stats -->
-        <div class="glass p-4 rounded-xl flex flex-col gap-3 mb-6 relative z-10">
+        <div class="glass p-4 rounded-xl flex flex-col gap-3 mb-4 shrink-0 relative z-10">
             <div class="flex justify-between items-center text-sm font-bold">
                 <div>Ability Score: <span id="score-display" class="text-glow-cyan text-lg">0</span></div>
                 <div>Lvl: <span id="progress-text">1/10</span></div>
             </div>
-            
             <div>
                 <div class="text-xs mb-1 flex justify-between"><span>Adaptability (Health)</span><span id="health-text">100%</span></div>
                 <div class="health-bar-container"><div id="health-bar" class="health-bar" style="width: 100%;"></div></div>
             </div>
-            
             <div>
                 <div class="text-xs mb-1">Mission Progress</div>
                 <div class="health-bar-container"><div id="progress-bar" class="progress-bar" style="width: 10%;"></div></div>
@@ -179,63 +152,60 @@
         </div>
 
         <!-- Situation / Core Trigger -->
-        <div class="glass p-5 rounded-xl mb-6 relative z-10 border-l-4 border-yellow-400">
-            <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-2">Situasi Lapangan</h3>
-            <p id="scenario-text" class="text-sm md:text-base leading-relaxed">Memuat skenario...</p>
+        <div class="glass p-4 rounded-xl mb-4 shrink-0 relative z-10 border-l-4 border-yellow-400">
+            <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-1">Situasi Lapangan</h3>
+            <p id="scenario-text" class="text-sm md:text-base leading-snug">Memuat skenario...</p>
         </div>
 
-        <!-- Game Area (Drop Zones & Card) -->
-        <div class="flex-grow flex flex-col justify-between relative mt-2">
+        <div class="flex-grow flex flex-col justify-end relative pb-4">
             
-            <!-- Dedicated Slot for Draggable Card -->
-            <div class="relative flex items-center justify-center min-h-[160px] w-full px-2 mb-4">
-                <div class="absolute inset-0 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center text-xs text-gray-500 pointer-events-none">
-                    Slot Respon
-                </div>
-                <!-- Draggable Card Container -->
-                <div id="drag-card" class="glass-card p-4 flex items-center justify-center text-center touch-none select-none cursor-grab z-20" style="min-height: 120px;">
+            <!-- Draggable Card Dock (Fixed Layout to prevent overlapping) -->
+            <div class="relative w-full max-w-sm mx-auto flex items-center justify-center min-h-[120px] mb-8">
+                <!-- Dock placeholder outline -->
+                <div class="absolute inset-0 border-2 border-dashed border-gray-500/50 rounded-xl bg-black/10"></div>
+                
+                <!-- The Actual Card -->
+                <div id="drag-card" class="glass-card p-4 w-full h-full flex items-center justify-center text-center touch-none select-none cursor-grab relative z-50">
                     <p id="card-text" class="text-sm font-medium pointer-events-none">Memuat respons...</p>
                 </div>
-            </div>
 
-            <!-- Hint text -->
-            <div id="drag-hint" class="text-center text-gray-400 text-xs animate-pulse pointer-events-none mb-4">
-                👆 Drag (Tarik) kartu ke zona di bawah
+                <!-- Hint text -->
+                <div id="drag-hint" class="absolute -top-8 w-full text-center text-[#00f2fe] text-xs animate-pulse pointer-events-none z-0 font-bold tracking-wide">
+                    👆 Tarik kartu ke kotak pilihan di bawah
+                </div>
             </div>
 
             <!-- Drop Zones -->
-            <div class="grid grid-cols-2 gap-4 relative z-10 h-32">
+            <div class="grid grid-cols-2 gap-4 relative z-10 h-32 shrink-0">
                 <div id="zone-destruktif" class="drop-zone glass flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#fe0979] text-[#fe0979]">
-                    <span class="text-2xl mb-1">🛑</span>
-                    <span class="text-xs font-bold uppercase">Destruktif</span>
-                    <span class="text-[10px] text-center mt-1 text-gray-400">Mode Auto-Reject<br>(Drama)</span>
+                    <span class="text-2xl mb-1 pointer-events-none">🛑</span>
+                    <span class="text-xs font-bold uppercase pointer-events-none">Destruktif</span>
+                    <span class="text-[10px] text-center mt-1 text-gray-400 pointer-events-none">Mode Auto-Reject<br>(Drama)</span>
                 </div>
                 <div id="zone-konstruktif" class="drop-zone glass flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#00f2fe] text-[#00f2fe]">
-                    <span class="text-2xl mb-1">✅</span>
-                    <span class="text-xs font-bold uppercase">Konstruktif</span>
-                    <span class="text-[10px] text-center mt-1 text-gray-400">Rumus 3T<br>(Fokus Solusi)</span>
+                    <span class="text-2xl mb-1 pointer-events-none">✅</span>
+                    <span class="text-xs font-bold uppercase pointer-events-none">Konstruktif</span>
+                    <span class="text-[10px] text-center mt-1 text-gray-400 pointer-events-none">Rumus 3T<br>(Fokus Solusi)</span>
                 </div>
             </div>
         </div>
 
-        <!-- Modal Feedback (Pop up after drop) -->
         <div id="feedback-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col justify-center items-center p-6">
             <div id="feedback-content" class="glass p-6 rounded-2xl max-w-sm w-full text-center transform scale-95 transition-transform">
                 <div id="feedback-icon" class="text-5xl mb-4">✅</div>
                 <h3 id="feedback-title" class="text-xl font-bold mb-2">Tepat!</h3>
                 <p id="feedback-desc" class="text-sm text-gray-300 mb-6">Penjelasan...</p>
-                <button onclick="nextQuestion()" class="btn-glass w-full py-2 rounded font-bold">Lanjut</button>
+                <button onclick="nextQuestion()" class="btn-glass w-full py-3 rounded font-bold uppercase tracking-widest text-sm">Lanjut</button>
             </div>
         </div>
     </div>
 
-    <!-- SCREEN 4: POST-ACTION DEBRIEF -->
     <div id="screen-debrief" class="screen justify-start">
-        <div class="glass p-6 rounded-2xl w-full max-w-2xl mx-auto mb-6 text-center fade-in">
+        <div class="glass p-6 rounded-2xl w-full max-w-2xl mx-auto mb-6 text-center fade-in mt-4">
             <h2 class="text-2xl font-bold text-glow-cyan mb-1">Mission Accomplished</h2>
-            <p id="player-identity" class="text-sm text-gray-400 mb-4">Nama - NIK</p>
+            <p id="player-identity" class="text-sm text-gray-400 mb-4 font-semibold tracking-wider">Nama</p>
             
-            <div class="flex justify-center gap-8 mb-6">
+            <div class="flex justify-center gap-12 mb-6">
                 <div>
                     <p class="text-xs text-gray-400">Final Score</p>
                     <p id="final-score" class="text-4xl font-bold text-[#00f2fe]">0</p>
@@ -250,24 +220,21 @@
             <div id="badge-container" class="p-4 rounded-xl border border-dashed mb-4 bg-black/30">
                 <div id="badge-icon" class="text-6xl mb-2">🏆</div>
                 <h3 id="badge-title" class="font-bold text-lg">Predikat</h3>
-                <p id="badge-desc" class="text-xs text-gray-300 mt-1">Deskripsi reinforcement</p>
+                <p id="badge-desc" class="text-xs text-gray-300 mt-1 leading-relaxed">Deskripsi reinforcement</p>
             </div>
         </div>
 
         <!-- Review List -->
         <div class="glass p-6 rounded-2xl w-full max-w-2xl mx-auto flex-grow flex flex-col fade-in" style="animation-delay: 0.2s;">
-            <h3 class="font-bold mb-4 border-b border-gray-600 pb-2">Debriefing Report (Review)</h3>
+            <h3 class="font-bold mb-4 border-b border-gray-600 pb-2">Debriefing Report</h3>
             <div id="review-list" class="space-y-4 overflow-y-auto max-h-[40vh] pr-2 text-sm text-gray-200">
                 <!-- Injected via JS -->
             </div>
-            <button onclick="location.reload()" class="mt-6 w-full btn-glass py-3 rounded-lg font-bold">Main Lagi</button>
+            <button onclick="location.reload()" class="mt-6 w-full btn-glass py-3 rounded-lg font-bold uppercase tracking-widest">Main Lagi</button>
         </div>
     </div>
 
     <script>
-        /* ==========================================
-           DATA & CONTENT (Based on PDF)
-        ========================================== */
         const questionsData = [
             {
                 scenario: "Atasan menginstruksikan: 'Tolong hari ini terapkan SOP input data yang baru. Harus selesai sebelum jam 12.'",
@@ -331,19 +298,12 @@
             }
         ];
 
-        /* ==========================================
-           GAME STATE
-        ========================================== */
         let playerData = { nama: "" };
         let currentQuestion = 0;
         let score = 0;
         let health = 100;
-        let userHistory = []; // { scenario, correct, feedback }
+        let userHistory = []; 
         let isAudioMuted = false;
-
-        /* ==========================================
-           AUDIO SYSTEM (Web Audio API)
-        ========================================== */
         let audioCtx;
         let bgmOscillators = [];
         let isBgmPlaying = false;
@@ -389,7 +349,6 @@
             playTone(400, 'square', 0.1, 0.1);
         }
 
-        // Generative Ambient BGM (Gen Z Chill/Synthwave vibe)
         function startBGM() {
             if (isBgmPlaying || isAudioMuted) return;
             isBgmPlaying = true;
@@ -405,7 +364,7 @@
                 const gain = audioCtx.createGain();
                 
                 osc.type = 'sine';
-                osc.frequency.value = notes[noteIndex] / 2; // Low octave for chill vibe
+                osc.frequency.value = notes[noteIndex] / 2;
                 
                 gain.gain.setValueAtTime(0, audioCtx.currentTime);
                 gain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.5);
@@ -418,20 +377,15 @@
                 osc.stop(audioCtx.currentTime + 2.0);
                 
                 bgmOscillators.push({osc, gain});
-                // clean up array
                 if(bgmOscillators.length > 5) bgmOscillators.shift();
 
                 noteIndex = (noteIndex + Math.floor(Math.random() * 3) + 1) % notes.length;
-                
-                // Schedule next note
                 setTimeout(playNextNote, 1000); 
             }
             playNextNote();
         }
 
-        function stopBGM() {
-            isBgmPlaying = false;
-        }
+        function stopBGM() { isBgmPlaying = false; }
 
         function toggleAudio() {
             isAudioMuted = !isAudioMuted;
@@ -446,23 +400,19 @@
             }
         }
 
-        /* ==========================================
-           GAME LOGIC & UI FLOW
-        ========================================== */
         function switchScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        // 1. Gateway Submit
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             playerData.nama = document.getElementById('input-nama').value;
-            initAudio(); // Initialize audio context on first user interaction
+            initAudio();
             switchScreen('screen-briefing');
         });
 
-        // Fungsi untuk mengacak urutan array (Fisher-Yates Shuffle)
+        // Pengacak Array (Fisher-Yates Shuffle)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -470,10 +420,9 @@
             }
         }
 
-        // 2. Start Game
         function startGame() {
             startBGM();
-            shuffleArray(questionsData); // Mengacak urutan soal sebelum mulai
+            shuffleArray(questionsData); // Soal diacak di sini
             currentQuestion = 0;
             score = 0;
             health = 100;
@@ -482,7 +431,6 @@
             loadQuestion();
         }
 
-        // 3. Load Question
         function loadQuestion() {
             if (currentQuestion >= questionsData.length || health <= 0) {
                 endGame();
@@ -493,22 +441,16 @@
             document.getElementById('scenario-text').textContent = q.scenario;
             document.getElementById('card-text').textContent = q.card;
             
-            // Reset Stats UI
             document.getElementById('progress-text').textContent = `${currentQuestion + 1}/${questionsData.length}`;
             document.getElementById('progress-bar').style.width = `${((currentQuestion) / questionsData.length) * 100}%`;
             
-            // Reset Card Position
             resetCardPosition();
             
-            // Hint
             if(currentQuestion === 0) {
                 document.getElementById('drag-hint').style.display = 'block';
             }
         }
 
-        /* ==========================================
-           CUSTOM DRAG & DROP (Touch/Mouse)
-        ========================================== */
         const card = document.getElementById('drag-card');
         const zoneDestruktif = document.getElementById('zone-destruktif');
         const zoneKonstruktif = document.getElementById('zone-konstruktif');
@@ -516,12 +458,13 @@
         let isDragging = false;
         let startX, startY, initialX, initialY;
         
-        // Setup initial position center relative to its natural container flow
         function resetCardPosition() {
+            // Karena sekarang card berada di dalam slot dock relatif, kita hanya mereset transformasinya ke 0,0
             card.style.transform = `translate(0px, 0px)`;
-            card.classList.remove('shake');
+            card.classList.remove('pop');
+            // Memicu reflow kecil agar animasi jalan
+            void card.offsetWidth; 
             card.classList.add('pop');
-            setTimeout(() => card.classList.remove('pop'), 500);
         }
 
         function getEventPos(e) {
@@ -535,12 +478,12 @@
             isDragging = true;
             card.classList.add('grabbing');
             document.getElementById('drag-hint').style.display = 'none';
+            card.classList.remove('pop'); // Matikan animasi saat dipegang
             
             const pos = getEventPos(e);
             startX = pos.x;
             startY = pos.y;
             
-            // Get current transform translate values
             const style = window.getComputedStyle(card);
             const matrix = new DOMMatrixReadOnly(style.transform);
             initialX = matrix.m41;
@@ -549,7 +492,7 @@
 
         function onDragMove(e) {
             if (!isDragging) return;
-            e.preventDefault(); // Prevent scrolling on mobile while dragging
+            e.preventDefault(); // Mencegah layar scroll saat menarik kartu
             
             const pos = getEventPos(e);
             const dx = pos.x - startX;
@@ -560,7 +503,6 @@
             
             card.style.transform = `translate(${newX}px, ${newY}px)`;
 
-            // Visual feedback on hover
             const cardRect = card.getBoundingClientRect();
             const cardCenter = { x: cardRect.left + cardRect.width/2, y: cardRect.top + cardRect.height/2 };
             
@@ -600,8 +542,7 @@
                 playDropSFX();
                 checkAnswer(droppedZone);
             } else {
-                // Snap back to normal flow center
-                card.style.transform = `translate(0px, 0px)`;
+                resetCardPosition(); // Snap back jika tidak masuk kotak
             }
         }
 
@@ -610,7 +551,7 @@
                     point.y >= rect.top && point.y <= rect.bottom);
         }
 
-        // Event Listeners for Drag (Mouse & Touch)
+        // Setup Event Listeners
         card.addEventListener('mousedown', onDragStart);
         document.addEventListener('mousemove', onDragMove, { passive: false });
         document.addEventListener('mouseup', onDragEnd);
@@ -619,14 +560,10 @@
         document.addEventListener('touchmove', onDragMove, { passive: false });
         document.addEventListener('touchend', onDragEnd);
 
-        /* ==========================================
-           EVALUATION LOGIC
-        ========================================== */
         function checkAnswer(selectedType) {
             const q = questionsData[currentQuestion];
             const isCorrect = selectedType === q.correctType;
 
-            // Save history
             userHistory.push({
                 scenario: q.scenario,
                 selected: selectedType,
@@ -641,10 +578,10 @@
                 showFeedback(true, "Tepat Sekali!", q.feedback);
             } else {
                 playWrongSFX();
-                health -= 25; // 4 mistakes = Game Over
+                health -= 25;
                 document.getElementById('health-bar').style.width = `${Math.max(0, health)}%`;
                 document.getElementById('health-text').textContent = `${Math.max(0, health)}%`;
-                document.getElementById('health-bar').style.background = '#ff0844'; // Solid red alert
+                document.getElementById('health-bar').style.background = '#ff0844'; 
                 
                 setTimeout(()=> {
                     document.getElementById('health-bar').style.background = 'linear-gradient(90deg, #ff0844 0%, #ffb199 100%)';
@@ -666,7 +603,6 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            // Animation
             setTimeout(() => {
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
@@ -689,33 +625,27 @@
             }, 200);
         }
 
-        /* ==========================================
-           POST-ACTION DEBRIEF (Ending)
-        ========================================== */
         function endGame() {
             stopBGM();
             document.getElementById('progress-bar').style.width = '100%';
             switchScreen('screen-debrief');
             
-            // Set Identity & Stats
-            document.getElementById('player-identity').textContent = playerData.nama;
+            document.getElementById('player-identity').textContent = playerData.nama.toUpperCase();
             document.getElementById('final-score').textContent = score;
             document.getElementById('final-health').textContent = `${Math.max(0, health)}%`;
 
-            // Determine Badge
             const badgeIcon = document.getElementById('badge-icon');
             const badgeTitle = document.getElementById('badge-title');
             const badgeDesc = document.getElementById('badge-desc');
             const badgeContainer = document.getElementById('badge-container');
 
             if (health <= 0) {
-                // Game Over by health
                 badgeIcon.textContent = '💔';
                 badgeTitle.textContent = "Drama Victim (Need Improvement)";
                 badgeTitle.className = "font-bold text-lg text-[#fe0979]";
                 badgeDesc.textContent = "Energi profesional Anda habis karena terlalu sering masuk Mode Auto-Reject. Fokus pada Rumus 3T di lapangan.";
                 badgeContainer.className = "p-4 rounded-xl border border-dashed border-[#fe0979] mb-4 bg-[#fe0979]/10 text-center";
-                playTone(150, 'sawtooth', 1, 0.5); // Sad tone
+                playTone(150, 'sawtooth', 1, 0.5); 
             } else if (score === 100) {
                 badgeIcon.textContent = '👑';
                 badgeTitle.textContent = "The Pivot Master (Elite Leader)";
@@ -723,12 +653,10 @@
                 badgeDesc.textContent = "Luar biasa! Anda berhasil menguasai ego dan merubah niat menjadi aksi nyata tanpa konflik. Anda adalah Leader 3T Sejati!";
                 badgeContainer.className = "p-4 rounded-xl border border-dashed border-[#00f2fe] mb-4 bg-[#00f2fe]/10 text-center glow-cyan";
                 
-                // Win arpeggio
                 setTimeout(()=>playTone(400, 'sine', 0.1, 0.5), 0);
                 setTimeout(()=>playTone(500, 'sine', 0.1, 0.5), 100);
                 setTimeout(()=>playTone(600, 'sine', 0.1, 0.5), 200);
                 setTimeout(()=>playTone(800, 'sine', 0.4, 0.5), 300);
-
             } else if (score >= 70) {
                 badgeIcon.textContent = '🛡️';
                 badgeTitle.textContent = "Adaptive Leader (Pro)";
@@ -743,19 +671,18 @@
                 badgeContainer.className = "p-4 rounded-xl border border-dashed border-yellow-400 mb-4 bg-yellow-400/10 text-center";
             }
 
-            // Populate Review List
             const list = document.getElementById('review-list');
             list.innerHTML = '';
             userHistory.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = `p-3 rounded border-l-4 ${item.correct ? 'border-green-500 bg-green-500/10' : 'border-red-500 bg-red-500/10'}`;
+                div.className = `p-3 rounded border-l-4 ${item.correct ? 'border-green-500 bg-green-500/10' : 'border-red-500 bg-red-500/10'} text-left`;
                 div.innerHTML = `
                     <div class="flex justify-between items-start mb-1">
-                        <span class="font-bold text-xs">Situasi ${index + 1}</span>
+                        <span class="font-bold text-xs uppercase text-gray-400">Kasus ${index + 1}</span>
                         <span class="text-lg">${item.correct ? '✅' : '❌'}</span>
                     </div>
-                    <p class="text-xs mb-2 text-gray-300">Respon Anda: ${item.selected.toUpperCase()}</p>
-                    <p class="text-xs font-light italic text-[#00f2fe]">${item.feedback}</p>
+                    <p class="text-xs mb-2 text-gray-200">Respon yang Anda pilih: <strong>${item.selected.toUpperCase()}</strong></p>
+                    <p class="text-[11px] font-light italic text-[#00f2fe] leading-relaxed">${item.feedback}</p>
                 `;
                 list.appendChild(div);
             });
